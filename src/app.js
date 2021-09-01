@@ -4,7 +4,7 @@ const schema = yup.string().matches(/.rss/).url();
 
 const validate = (state) =>
   // Возвращает промис
-  schema.validate(state.form.url).then((result) => !state.feedsList.includes(result)).catch((err) => console.log(`${err}присуствует в фиде`));
+  schema.validate(state.form.url).then((result) => !state.feedsList.includes(result)).catch((err) => console.log(err));
 
 export default () => {
   const state = {
@@ -24,7 +24,7 @@ export default () => {
     const value = formData.get('url');
     state.form.url = value;
     validate(state).then((result) => state.form.valid = result);
-    console.log(`state.form.valid${state.form.valid}`);
+    console.log(`state.form.valid: ${state.form.valid}`);
     state.feedsList.push(state.form.url);
 
     // validate(state).then((result) => state.valid = result); // scheme validate  проверить
