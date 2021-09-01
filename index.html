@@ -17,7 +17,7 @@
                 <div class="row">
                     <div class="col">
                         <div class="form-floating">
-                            <input id="url-input" class="form-control w-100" placeholder="ссылка RSS">
+                            <input id="url-input" autofocus required name="url" class="form-control w-100" placeholder="ссылка RSS" autocomplete="off">
                             <label for="url-input">Ссылка RSS</label>
                         </div>
                     </div>
@@ -25,13 +25,13 @@
                         <button type="submit" class="h-100 btn btn-lg btn-primary px-sm-5">Добавить</button>
                     </div>
                 </div>
-                
             </form>
-            
+            <p class="mt-2 mb-0 text-muted">Пример: https://ru.hexlet.io/lessons.rss</p>
+<!--            class = valid-feedback || invalid-feedback-->
+<!--            Добавить внутрь формы для отображение классов -->
+            <p class="feedback m-0 position-absolute small text-danger"></p>
         </div>
-        
     </div>
-    
 </section>
 </body>
 </html>
