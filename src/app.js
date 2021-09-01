@@ -2,11 +2,9 @@ import * as yup from 'yup';
 
 const schema = yup.string().matches(/.rss/).url();
 
-const validate = (state) => {
-  // дубли
-
-  // некорректная урла
-};
+const validate = (state) =>
+  // Возвращает промис
+  schema.validate(state.form.url).then((result) => !state.feedsList.includes(result)).catch((err) => console.log(`${err}присуствует в фиде`));
 
 export default () => {
   const state = {
@@ -25,7 +23,11 @@ export default () => {
     const formData = new FormData(form);
     const value = formData.get('url');
     state.form.url = value;
-    state.form.valid = validate(state);
+    validate(state).then((result) => state.form.valid = result);
+    console.log(`state.form.valid${state.form.valid}`);
+    state.feedsList.push(state.form.url);
+
+    // validate(state).then((result) => state.valid = result); // scheme validate  проверить
   });
 };
 
