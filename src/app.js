@@ -2,7 +2,6 @@ import * as yup from 'yup';
 import { isEmpty } from 'lodash';
 import watch from './watcher.js';
 
-// const schema = yup.string().url().matches(/.rss/);
 const schema = yup.string().url().matches(/.rss/);
 
 /* ошибки:
@@ -13,13 +12,14 @@ const schema = yup.string().url().matches(/.rss/);
 3. Ресурс не содержит валидный RSS (по адресу его нет)
  */
 
-const validate = (url, errorMessage, feedsList) => {
-  schema.validate(url)
-    .then((result) => {
-      if (feedsList.includes(result)) {
-        errorMessage.push('RSS уже существует');
-      }
-    }).catch(() => errorMessage.push('Ссылка должна быть валидным URL'));
+const validate = (url) => schema.validate(url);
+
+const addToFeedList = (state, feed) => {
+  if (state.feedsList.includes(feed)) {
+    state.form.errorMessage = 'RSS уже существует';
+  } else {
+    state.feedsList.push(feed);
+  }
 };
 
 export default () => {
@@ -28,7 +28,7 @@ export default () => {
     form: {
       valid: true,
       url: '',
-      errorMessage: [],
+      errorMessage: null,
     },
   };
 
@@ -39,18 +39,13 @@ export default () => {
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-
-    console.log(`input.value: ${input.value}`);
-    // watchedState.form.url = input.value
     watchedState.form.url = input.value;
+    console.log(`watchedState.form.url ${watchedState.form.url}`);
 
-    // валидируем на ошибки, добавляем в errors ошибку если есть
-    validate(watchedState.form.url, watchedState.form.errorMessage, watchedState.feedsList);
+    schema.validate(watchedState.form.url)
+      .catch(() => watchedState.form.errorMessage = 'Ссылка должна быть валидным URL')
+      .then((result) => addToFeedList(watchedState, result));
 
     // форма валидная если нет ошибок
-    watchedState.form.valid = isEmpty(watchedState.form.errorMessage);
-
-    // Если валидация пройдена, добавил фид и очистил все
-    setTimeout(() => watchedState.feedsList.push(input.value), 2000);
   });
 };

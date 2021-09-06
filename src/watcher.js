@@ -2,26 +2,13 @@ import onChange from 'on-change';
 import { isEmpty } from 'lodash';
 
 const renderErrors = (error, prevError) => {
-  const [errorMessage] = error;
-
-  console.log(`errorMessage: ${errorMessage}`);
-
   const errorElement = document.querySelector('p.feedback');
-  // если это новая ошибка, и до этого не было
-
-  if (isEmpty(prevError)) {
-    errorElement.textContent = errorMessage;
-    // eslint-disable-next-line brace-style
-  }
-
-  // кейс: ошибки были и появились новые
-  else {
-    errorElement.textContent = errorMessage;
-  }
+  errorElement.textContent = error;
 };
 
 // TODO: мб диспечерезация
 const render = (path, value, prevValue) => {
+  console.log(`path: ${path}`);
   if (path === 'form.errorMessage') {
     renderErrors(value, prevValue);
   }
