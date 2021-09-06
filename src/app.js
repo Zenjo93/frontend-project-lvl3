@@ -1,5 +1,4 @@
 import * as yup from 'yup';
-import { isEmpty } from 'lodash';
 import watch from './watcher.js';
 
 const schema = yup.string().url().matches(/.rss/);
@@ -12,13 +11,12 @@ const schema = yup.string().url().matches(/.rss/);
 3. Ресурс не содержит валидный RSS (по адресу его нет)
  */
 
-const validate = (url) => schema.validate(url);
-
 const addToFeedList = (state, feed) => {
   if (state.feedsList.includes(feed)) {
     state.form.errorMessage = 'RSS уже существует';
   } else {
     state.feedsList.push(feed);
+    console.log(`feedsList: ${state.feedsList.toString()}`);
   }
 };
 
@@ -39,13 +37,12 @@ export default () => {
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+
+    console.log(`watchedState.form.errorMessage: ${watchedState.form.errorMessage}`);
     watchedState.form.url = input.value;
-    console.log(`watchedState.form.url ${watchedState.form.url}`);
 
     schema.validate(watchedState.form.url)
-      .catch(() => watchedState.form.errorMessage = 'Ссылка должна быть валидным URL')
-      .then((result) => addToFeedList(watchedState, result));
-
-    // форма валидная если нет ошибок
+      .then((url) => addToFeedList(watchedState, url))
+      .catch(() => watchedState.form.errorMessage = 'Ссылка должна быть валидным URL');
   });
 };
