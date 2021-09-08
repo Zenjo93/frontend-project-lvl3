@@ -11,41 +11,16 @@ yup.setLocale({
 
 const schema = yup.string().url().matches(/.rss/);
 
-const i18nextInstance = i18next.createInstance();
-
-const i18n = i18nextInstance.init({
+const i18n = i18next.createInstance().init({
   lng: 'ru',
   debug: true,
   defaultNS: 'validationErrors',
-  resources: {
-    ru: {
-      validationErrors: {
-        incorrectURL: 'Ссылка должна быть валидным URL',
-        doubleURL: 'RSS уже существует',
-      },
-    },
-  },
+  resources: ru,
 });
-
-// РАБОТАЕТ
-// const i18n = i18nextInstance.init({
-//   lng: 'ru',
-//   debug: true,
-//   resources: {
-//     ru: {
-//       translation: {
-//         validationErrors: {
-//           incorrectURL: 'Ссылка должна быть валидным URL',
-//           doubleURL: 'RSS уже существует',
-//         },
-//       },
-//     },
-//   },
-// });
 
 const addToFeedList = (state, feed, t) => {
   if (state.feedsList.includes(feed)) {
-    state.form.errorMessage = t('validationErrors.doubleURL');
+    state.form.errorMessage = t('doubleURL');
   } else {
     state.feedsList.push(feed);
     console.log(`feedsList: ${state.feedsList.toString()}`);
