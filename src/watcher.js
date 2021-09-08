@@ -1,5 +1,6 @@
 import onChange from 'on-change';
 
+// TODO: добавить 3 тип ошибки - Ресурс не содержит валидный RSS
 const renderErrors = (error) => {
   const errorElement = document.querySelector('p.feedback');
   const input = document.getElementById('url-input');
@@ -8,7 +9,7 @@ const renderErrors = (error) => {
   input.classList.add('is-invalid');
 };
 
-// TODO: мб диспечерезация
+// мб диспечерезация
 const render = (path, value, prevValue) => {
   if (path === 'form.errorMessage') {
     renderErrors(value, prevValue);
@@ -25,11 +26,3 @@ const render = (path, value, prevValue) => {
 
 // 2 параметр: function (path, value, previousValue, applyData)
 export default (state) => onChange(state, render);
-
-/* ошибки:
-
-1. Ссылка должна быть валидным URL
-2. RSS уже существует
-3. Ресурс не содержит валидный RSS
-
- */

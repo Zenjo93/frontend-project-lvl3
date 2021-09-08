@@ -1,19 +1,51 @@
 import * as yup from 'yup';
+import i18next from 'i18next';
 import watch from './watcher.js';
+import ru from './locales/ru.js';
+
+yup.setLocale({
+  string: {
+    url: 'incorrectURL',
+  },
+});
 
 const schema = yup.string().url().matches(/.rss/);
 
-/* ошибки:
+const i18nextInstance = i18next.createInstance();
 
-1. Ссылка должна быть валидным URL
-2. RSS уже существует
+const i18n = i18nextInstance.init({
+  lng: 'ru',
+  debug: true,
+  defaultNS: 'validationErrors',
+  resources: {
+    ru: {
+      validationErrors: {
+        incorrectURL: 'Ссылка должна быть валидным URL',
+        doubleURL: 'RSS уже существует',
+      },
+    },
+  },
+});
 
-3. Ресурс не содержит валидный RSS (по адресу его нет)
- */
+// РАБОТАЕТ
+// const i18n = i18nextInstance.init({
+//   lng: 'ru',
+//   debug: true,
+//   resources: {
+//     ru: {
+//       translation: {
+//         validationErrors: {
+//           incorrectURL: 'Ссылка должна быть валидным URL',
+//           doubleURL: 'RSS уже существует',
+//         },
+//       },
+//     },
+//   },
+// });
 
-const addToFeedList = (state, feed) => {
+const addToFeedList = (state, feed, t) => {
   if (state.feedsList.includes(feed)) {
-    state.form.errorMessage = 'RSS уже существует';
+    state.form.errorMessage = t('validationErrors.doubleURL');
   } else {
     state.feedsList.push(feed);
     console.log(`feedsList: ${state.feedsList.toString()}`);
@@ -38,11 +70,12 @@ export default () => {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    console.log(`watchedState.form.errorMessage: ${watchedState.form.errorMessage}`);
     watchedState.form.url = input.value;
 
-    schema.validate(watchedState.form.url)
-      .then((url) => addToFeedList(watchedState, url))
-      .catch(() => watchedState.form.errorMessage = 'Ссылка должна быть валидным URL');
+    i18n.then((t) => {
+      schema.validate(watchedState.form.url)
+        .then((url) => addToFeedList(watchedState, url, t))
+        .catch((err) => watchedState.form.errorMessage = t(err.errors));
+    });
   });
 };
