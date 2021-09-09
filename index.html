@@ -7,7 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>RSS Feed</title>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
+<main class="flex-grow-1">
 <section class="container-fluid bg-dark p-5">
     <div class="row text-white">
         <div class="col-md-10 col-lg-8 mx-auto text-white">
@@ -27,11 +28,24 @@
                 </div>
             </form>
             <p class="mt-2 mb-0 text-muted">Пример: https://ru.hexlet.io/lessons.rss</p>
-<!--            class = valid-feedback || invalid-feedback-->
-<!--            Добавить внутрь формы для отображение классов -->
             <p class="feedback m-0 position-absolute small text-danger"></p>
         </div>
     </div>
 </section>
+</main>
+<section class="container-fluid container-xxl p-5">
+    <div class="row">
+        <div class="col-md-10 col-lg-8 order-1 mx-auto posts"></div>
+        <div class="col-md-10 col-lg-4 mx-auto order-0 order-lg-1 feeds"></div>
+    </div>
+</section>
+<footer class="footer border-top py-3 mt-5 bg-light">
+    <div class="container-xl">
+        <div class="text-center">
+            created by
+            <a href="https://github.com/Zenjo93" target="_blank">Vladislav Berezhnoy</a>
+        </div>
+    </div>
+</footer>
 </body>
 </html>
