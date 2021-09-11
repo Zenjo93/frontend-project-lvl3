@@ -20,11 +20,11 @@ const i18n = i18next.createInstance().init({
   resources: ru,
 });
 
-const isInFeedList = (feeds, feed) => {
-  if (feeds.includes(feed)) {
+const isInFeedList = (feedsList, feed) => {
+  if (feedsList.includes(feed)) {
     throw new Error('doubleURL');
   }
-  feeds.push(feed);
+  feedsList.push(feed);
   return feed;
 };
 
@@ -35,8 +35,8 @@ const makeFeed = (state, rss) => {
   return {
     id: state.feeds.length,
     url: state.form.url,
-    title,
-    description,
+    title: title.textContent,
+    description: description.textContent,
   };
 };
 
@@ -58,6 +58,7 @@ const makePosts = (state, rss) => {
 
 export default () => {
   const state = {
+    feedsList: [],
     feeds: [],
     posts: [],
     form: {
@@ -80,7 +81,7 @@ export default () => {
     // TODO: _.findIndex(feeds, (feed) => feed.url == url; }); если нашел -то ошибка (дубуль)
     i18n.then((t) => {
       schema.validate(watchedState.form.url)
-        .then((url) => isInFeedList(watchedState.feeds, url))
+        .then((url) => isInFeedList(watchedState.feedsList, url))
         .catch((err) => {
           watchedState.form.errorMessage = t(err.message);
         })
@@ -92,8 +93,11 @@ export default () => {
 
           const posts = makePosts(state, rss);
           watchedState.posts.push(posts);
+
+          watchedState.form.processState = 'sent';
         })
-        .catch(() => {
+        .catch((err) => {
+          console.log(err.message);
           watchedState.form.processState = 'error';
           watchedState.form.errorMessage = t('networkErr');
         });
@@ -102,27 +106,6 @@ export default () => {
 };
 
 // children - возращает только Element, а childNodes - все узлы (вкл текст и комменты)
-
-// i18n.then((t) => {
-//   schema.validate(watchedState.form.url)
-//     .then((url) => addToFeedList(watchedState, url, t))
-//     .catch((err) => watchedState.form.errorMessage = t(err.errors))
-//     .then((result) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${result}`))
-//     .then((response) => {
-//       console.log(`RESPONSE DATA: ${JSON.stringify(response.data.contents, null, 4)}`);
-//       return parser.parseFromString(response.data.contents, 'text/xml');
-//     })
-//     .then((document) => {
-//       console.log(document);
-//       //  который добавляется в стейт
-//       // айтемы, с освоими названиями или линками
-
-//       const title = document.querySelector('title');
-//       const description = document.querySelector('description');
-//       console.log(title);
-//       console.log(description);
-//     });
-// });
 
 // Скачать поток и обработать ошибку
 
