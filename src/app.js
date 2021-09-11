@@ -45,13 +45,12 @@ const makePosts = (state, rss) => {
   const items = Array.from(itemCol);
 
   return items.map((item) => {
-    console.log(item);
     const name = item.querySelector('title');
     const link = item.querySelector('link');
     return {
-      id: state.feeds.length - 1,
-      link,
-      name,
+      id: state.feeds.length,
+      link: link.textContent,
+      name: name.textContent,
     };
   });
 };
@@ -88,11 +87,12 @@ export default () => {
         .then((url) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`))
         .then((response) => parseRSS(response.data.contents))
         .then((rss) => {
+          console.log(rss);
           const feed = makeFeed(state, rss);
           watchedState.feeds.push(feed);
 
           const posts = makePosts(state, rss);
-          watchedState.posts.push(posts);
+          watchedState.posts.push(...posts);
 
           watchedState.form.processState = 'sent';
         })
