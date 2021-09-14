@@ -1,15 +1,16 @@
 import * as yup from 'yup';
-import i18next from 'i18next';
-import axios from 'axios';
-import watch from './watcher.js';
-import ru from './locales/ru.js';
-import parseRSS from './parserRSS.js';
 
-const form = document.querySelector('form');
+// import axios from 'axios';
+import watch from './watcher.js';
+// import parseRSS from './parserRSS.js';
 
 yup.setLocale({
-  url: 'processStatus.errors.invalidURL',
-  notOneOf: 'processStatus.errors.duplicatedURL',
+  string: {
+    url: 'processStatus.errors.invalidURL',
+  },
+  mixed: {
+    notOneOf: 'processStatus.errors.duplicatedURL',
+  },
 });
 
 const validate = (url, feedList) => {
@@ -29,16 +30,22 @@ export default () => {
   };
 
   const watchedState = watch(state);
+  const form = document.querySelector('form');
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+    // watchedState.form.processState = 'sending';
     watchedState.form.value = form.url.value;
 
     validate(watchedState.form.value, watchedState.feedList)
-      .then((url) => watchedState.feedList.push(url))
+      .then((url) => {
+        watchedState.form.error = null;
+        watchedState.feedList.push(url);
+      })
       .catch((err) => {
-        watchedState.form.processState = 'error';
+        watchedState.form.valid = false;
         watchedState.form.error = err.message;
+        console.log(err.message);
       });
   });
 };

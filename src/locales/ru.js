@@ -1,16 +1,18 @@
 export default {
   ru: {
-    processStatus: {
-      success: 'RSS успешно загружен',
-      errors: {
-        invalidURL: 'Ссылка должна быть валидным URL',
-        duplicatedURL: 'RSS уже существует',
-        networkError: 'Ошибка сети',
-        invalidRSS: 'Ресурс не содержит валидный RSS',
+    translation: {
+      processStatus: {
+        success: 'RSS успешно загружен',
+        errors: {
+          invalidURL: 'Ссылка должна быть валидным URL',
+          duplicatedURL: 'RSS уже существует',
+          networkError: 'Ошибка сети',
+          invalidRSS: 'Ресурс не содержит валидный RSS',
+        },
       },
-    },
-    buttons: {
-      view: 'Просмотр',
+      buttons: {
+        view: 'Просмотр',
+      },
     },
   },
 };

@@ -1,13 +1,26 @@
 import onChange from 'on-change';
+import i18next from 'i18next';
+import ru from './locales/ru.js';
 
 const input = document.getElementById('url-input');
+const feedback = document.querySelector('p.feedback');
 
-const handleProcessState = (processState) => {
+const i18n = i18next.createInstance().init({
+  lng: 'ru',
+  debug: true,
+  resources: ru,
+});
 
-};
+// const handleProcessState = (processState) => {
+//
+// };
 
 const handleError = (error) => {
+  feedback.classList.add('text-danger');
 
+  i18n.then((t) => {
+    feedback.textContent = t(error);
+  });
 };
 
 // Переписать на диспечерезацию
@@ -16,10 +29,10 @@ const render = (path, value) => {
 
   switch (path) {
     case 'form.processState':
-      handleProcessState(value);
+      // handleProcessState(value);
       break;
 
-    // Форма не прошла валидацию (не корректный урл, дубль) - подсвечиваем красной рамкой и пишем текст
+    // Форма не прошла валидацию (не корректный урл, дубль) - подсвечиваем красной рамкой
     case 'form.valid':
       input.classList.toggle('is-invalid', !value);
       break;
@@ -29,8 +42,8 @@ const render = (path, value) => {
       handleError(value);
       break;
 
-    default:
-      throw new Error(`Unknow state at ${path} for ${value}`);
+    // default:
+    //   throw new Error(`Unknow state at ${path} for ${value}`);
   }
 };
 
@@ -110,7 +123,8 @@ export default (state) => onChange(state, render);
 //
 //   const postsElements = postsObj.map((post) => {
 //     const postItem = document.createElement('li');
-//     postItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
+//     postItem.classList.add('list-group-item', 'd-flex', 'justify-content-between',
+//     'align-items-start', 'border-0', 'border-end-0');
 //
 //     const postUrl = document.createElement('a');
 //     postUrl.classList.add('w-bold');
