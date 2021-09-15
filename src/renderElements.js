@@ -18,12 +18,34 @@ export const renderBlock = (name) => {
   return cardContainer;
 };
 
-export const renderItem = () => {
+export const renderFeedItem = (data) => {
+  const feedItem = document.createElement('li');
+  feedItem.classList.add('list-group-item', 'border-0', 'border-end-0');
 
+  const feedTitle = document.createElement('h3');
+  feedTitle.classList.add('h6', 'm-0');
+  feedTitle.textContent = data.title;
+
+  const feedDescription = document.createElement('p');
+  feedDescription.classList.add('m-0', 'small', 'text-black-50');
+  feedDescription.textContent = data.description;
+
+  feedItem.append(feedTitle, feedDescription);
+
+  return feedItem;
 };
 
-// feedItem.append(feedItemTitle, feedItemDescription);
-//   feedGroup.append(feedItem);
-//   cardBody.append(cardTitle);
-//   cardBorder.append(cardBody, feedGroup);
-//   feeds.append(cardBorder);
+export const renderPostItem = (data) => {
+  const postItem = document.createElement('li');
+  postItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0',
+    'border-end-0');
+
+  const link = document.createElement('a');
+  link.classList.add('fw-bold');
+  link.href = data.link;
+  link.textContent = data.title;
+
+  postItem.append(link);
+
+  return postItem;
+};

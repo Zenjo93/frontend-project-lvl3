@@ -1,7 +1,8 @@
 import onChange from 'on-change';
 import i18next from 'i18next';
+import _ from 'lodash';
 import ru from './locales/ru.js';
-import { renderBlock } from './renderElements.js';
+import { renderBlock, renderFeedItem, renderPostItem } from './renderElements.js';
 
 const input = document.getElementById('url-input');
 const feedback = document.querySelector('p.feedback');
@@ -48,10 +49,30 @@ const initRender = () => {
   posts.append(renderBlock('Посты'));
 };
 
+const renderFeed = (value) => {
+  const feedItem = renderFeedItem(_.last(value));
+  const feedBlock = feeds.querySelector('ul');
+  feedBlock.append(feedItem);
+};
+
+const renderPosts = (value) => {
+  const postData = _.last(value);
+  const postsItems = postData.map((data) => renderPostItem(data));
+  const postBlock = posts.querySelector('ul');
+
+  postBlock.append(...postsItems);
+};
+
+//
+// const renderPosts = (value) => {
+//   // const feedItem = renderFeedItem(_.last(value));
+//   // const feedBlock = feeds.querySelector('ul');
+//   // feedBlock.append(feedItem);
+// };
+
 // Переписать на диспечерезацию
 const render = (path, value) => {
   // --- стейты приложения ---
-  console.log(path, value);
 
   switch (path) {
     case 'form.processState':
@@ -70,6 +91,17 @@ const render = (path, value) => {
 
     case 'init':
       initRender();
+      break;
+
+      // TODO
+    case 'feeds':
+      renderFeed(value);
+
+      break;
+
+      // TODO
+    case 'posts':
+      renderPosts(value);
       break;
 
     // default:
@@ -208,3 +240,16 @@ export default (state) => onChange(state, render);
 //
 // // 2 параметр: function (path, value, previousValue, applyData)
 //
+
+// <li className="list-group-item d-flex justify-content-between align-items-start border-0 border-end-0"><a
+//   href="https://ru.hexlet.io/courses/java-oop/lessons/patterns-continuation/theory_unit" className="fw-bold" data-id="2"
+//   target="_blank" rel="noopener noreferrer">Паттерны (продолжение) / Java: ООП</a>
+//   <button type="button" className="btn btn-outline-primary btn-sm" data-id="2" data-bs-toggle="modal"
+//           data-bs-target="#modal">Просмотр
+//   </button>
+// </li>
+
+// <li className="list-group-item border-0 border-end-0">
+// <h3 className="h6 m-0">Новые уроки на Хекслете</h3>
+// <p> className="m-0 small text-black-50">Практические уроки по программированию</p>
+// </li>
