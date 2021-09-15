@@ -11,25 +11,41 @@ const i18n = i18next.createInstance().init({
   resources: ru,
 });
 
-// const handleProcessState = (processState) => {
-//
-// };
+const handleProcessState = (processState) => {
+  // sent
+  switch (processState) {
+    case 'sent':
+      feedback.classList.add('text-success');
+      i18n.then((t) => {
+        feedback.textContent = t('processStatus.sent');
+      });
+      input.value = '';
+      input.focus();
+      break;
+  }
+};
 
 const handleError = (error) => {
-  feedback.classList.add('text-danger');
-
-  i18n.then((t) => {
-    feedback.textContent = t(error);
-  });
+  if (error === null) {
+    console.log('null!');
+    feedback.classList.remove('text-danger');
+    feedback.textContent = '';
+  } else {
+    feedback.classList.add('text-danger');
+    i18n.then((t) => {
+      feedback.textContent = t(error);
+    });
+  }
 };
 
 // Переписать на диспечерезацию
 const render = (path, value) => {
   // --- стейты приложения ---
+  console.log(path, value);
 
   switch (path) {
     case 'form.processState':
-      // handleProcessState(value);
+      handleProcessState(value);
       break;
 
     // Форма не прошла валидацию (не корректный урл, дубль) - подсвечиваем красной рамкой

@@ -2,7 +2,7 @@ export default {
   ru: {
     translation: {
       processStatus: {
-        success: 'RSS успешно загружен',
+        sent: 'RSS успешно загружен',
         errors: {
           invalidURL: 'Ссылка должна быть валидным URL',
           duplicatedURL: 'RSS уже существует',

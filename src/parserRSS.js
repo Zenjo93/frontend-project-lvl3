@@ -1,69 +1,43 @@
-export default (content) => {
-  console.log('INSIDE PARSE');
-  const parser = new DOMParser();
-  return parser.parseFromString(content, 'text/xml');
+import axios from 'axios';
+
+const getFeed = (xmlData) => {
+  const title = xmlData.querySelector('title').textContent;
+  const description = xmlData.querySelector('description').textContent;
+  return {
+    title,
+    description,
+  };
 };
-//
-// const feeds = [
-//   {
-//     id: 1,
-//     url: '',
-//     title: '',
-//     description: '',
-//   },
-// ];
-//
-// // const posts = [
-//   {
-//     id: 1,
-//     url: '',
-//     name: '',
-//   },
-// ];
-//
-// const state = {
-//   feedsList: [
-//     {
-//       id: 1,
-//       url: '',
-//       title: '',
-//       description: '',
-//     },
-//     {
-//       id: 1,
-//       url: '',
-//       title: '',
-//       description: '',
-//     },
-//     {
-//       id: 1,
-//       url: '',
-//       title: '',
-//       description: '',
-//     },
-//   ],
-//   posts: [
-//     {
-//       id: 1,
-//       url: '',
-//       name: '',
-//     },
-//     {
-//       id: 1,
-//       url: '',
-//       name: '',
-//     },
-//     {
-//       id: 1,
-//       url: '',
-//       name: '',
-//     },
-//
-//   ],
-//   form: {
-//     valid: true,
-//     processState: 'filling',
-//     url: '',
-//     errorMessage: null,
-//   },
-// };
+
+const getPosts = (xmlData) => {
+  const items = Array.from(xmlData.getElementsByTagName('item'));
+
+  return items.map((item) => {
+    const title = item.querySelector('title').textContent;
+    const link = item.querySelector('link').textContent;
+    return {
+      title,
+      link,
+    };
+  });
+};
+
+const isValidRSS = (xmlDOM) => !xmlDOM.getElementsByTagName('parsererror').length;
+
+const parseRSS = (rss) => {
+  const parser = new DOMParser();
+  const xmlData = parser.parseFromString(rss.data.contents, 'text/xml');
+
+  console.log(xmlData);
+  if (!isValidRSS(xmlData)) {
+    throw new Error('processStatus.errors.invalidRSS');
+  }
+
+  const feed = getFeed(xmlData);
+  const posts = getPosts(xmlData);
+
+  return [feed, posts];
+};
+
+export default (url) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`)
+  .then((rss) => parseRSS(rss), () => new Error('processStatus.errors.networkError'));

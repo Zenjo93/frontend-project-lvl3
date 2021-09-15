@@ -1,8 +1,10 @@
 import * as yup from 'yup';
+import parseRSS from './parserRSS.js';
 
-// import axios from 'axios';
 import watch from './watcher.js';
 // import parseRSS from './parserRSS.js';
+const form = document.querySelector('form');
+const input = document.getElementById('url-input');
 
 yup.setLocale({
   string: {
@@ -21,6 +23,8 @@ const validate = (url, feedList) => {
 export default () => {
   const state = {
     feedList: [],
+    feeds: [],
+    posts: [],
     form: {
       processState: 'filling', // filling, sent, error
       valid: true, // красная рамка
@@ -30,22 +34,34 @@ export default () => {
   };
 
   const watchedState = watch(state);
-  const form = document.querySelector('form');
+
+  input.addEventListener('input', () => {
+
+  });
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    // watchedState.form.processState = 'sending';
+    watchedState.form.error = null;
+    watchedState.form.valid = true;
     watchedState.form.value = form.url.value;
 
     validate(watchedState.form.value, watchedState.feedList)
-      .then((url) => {
-        watchedState.form.error = null;
-        watchedState.feedList.push(url);
+      .then((url) => parseRSS(url))
+      .then((data) => {
+        const [feed, posts] = data;
+
+        feed.id = watchedState.feedList.length;
+        posts.forEach((item) => item.postId = feed.id);
+
+        watchedState.feeds.push(feed);
+        watchedState.posts.push(posts);
+        watchedState.feedList.push(watchedState.form.value);
+        watchedState.form.processState = 'sent';
       })
       .catch((err) => {
         watchedState.form.valid = false;
         watchedState.form.error = err.message;
-        console.log(err.message);
+        console.log(`err end: ${err.message}`);
       });
   });
 };
@@ -71,32 +87,9 @@ export default () => {
 //   return feed;
 // };
 //
-// const makeFeed = (state, rss) => {
-//   const title = rss.querySelector('title');
-//   const description = rss.querySelector('description');
+
 //
-//   return {
-//     id: state.feeds.length,
-//     url: state.form.url,
-//     title: title.textContent,
-//     description: description.textContent,
-//   };
-// };
-//
-// const makePosts = (state, rss) => {
-//   const itemCol = rss.getElementsByTagName('item');
-//   const items = Array.from(itemCol);
-//
-//   return items.map((item) => {
-//     const name = item.querySelector('title');
-//     const link = item.querySelector('link');
-//     return {
-//       id: state.feeds.length,
-//       link: link.textContent,
-//       name: name.textContent,
-//     };
-//   });
-// };
+
 //
 // const makeRssRequest = (url) => {
 //   axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`)
