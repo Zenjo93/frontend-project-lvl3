@@ -22,11 +22,12 @@ const validate = (url, feedList) => {
 
 export default () => {
   const state = {
+    init: false,
     feedList: [],
     feeds: [],
     posts: [],
     form: {
-      processState: 'filling', // filling, sent, error
+      processState: 'filling', // init, filling, sent, error
       valid: true, // красная рамка
       error: null, // ключ ошибки
       value: '',
@@ -57,6 +58,7 @@ export default () => {
         watchedState.posts.push(posts);
         watchedState.feedList.push(watchedState.form.value);
         watchedState.form.processState = 'sent';
+        watchedState.init = watchedState.init || true;
       })
       .catch((err) => {
         watchedState.form.valid = false;

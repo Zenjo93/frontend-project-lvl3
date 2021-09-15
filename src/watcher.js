@@ -1,9 +1,12 @@
 import onChange from 'on-change';
 import i18next from 'i18next';
 import ru from './locales/ru.js';
+import { renderBlock } from './renderElements.js';
 
 const input = document.getElementById('url-input');
 const feedback = document.querySelector('p.feedback');
+const feeds = document.querySelector('.feeds');
+const posts = document.querySelector('.posts');
 
 const i18n = i18next.createInstance().init({
   lng: 'ru',
@@ -21,13 +24,15 @@ const handleProcessState = (processState) => {
       });
       input.value = '';
       input.focus();
+
+      // Отобразить 1 раз контейнеры для фидов и поста
+      // добавлять новые тайтлы и дексрпишены
       break;
   }
 };
 
 const handleError = (error) => {
   if (error === null) {
-    console.log('null!');
     feedback.classList.remove('text-danger');
     feedback.textContent = '';
   } else {
@@ -36,6 +41,11 @@ const handleError = (error) => {
       feedback.textContent = t(error);
     });
   }
+};
+
+const initRender = () => {
+  feeds.append(renderBlock('Фиды'));
+  posts.append(renderBlock('Посты'));
 };
 
 // Переписать на диспечерезацию
@@ -56,6 +66,10 @@ const render = (path, value) => {
     // Возникла ошибка (Ошибка сети, Ресурс не содержит валидный RSS) - высвечиваем текст
     case 'form.error':
       handleError(value);
+      break;
+
+    case 'init':
+      initRender();
       break;
 
     // default:
