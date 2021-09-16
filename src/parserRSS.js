@@ -28,7 +28,6 @@ const parseRSS = (rss) => {
   const parser = new DOMParser();
   const xmlData = parser.parseFromString(rss.data.contents, 'text/xml');
 
-  console.log(xmlData);
   if (!isValidRSS(xmlData)) {
     throw new Error('processStatus.errors.invalidRSS');
   }
