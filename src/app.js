@@ -1,11 +1,9 @@
 import * as yup from 'yup';
 import _ from 'lodash';
 import parseRSS from './parserRSS.js';
-
 import watch from './watcher.js';
-// import parseRSS from './parserRSS.js';
+
 const form = document.querySelector('form');
-const input = document.getElementById('url-input');
 
 yup.setLocale({
   string: {

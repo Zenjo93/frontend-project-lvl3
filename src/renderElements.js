@@ -1,3 +1,7 @@
+const modalTitle = document.querySelector('.modal-title');
+const modalBody = document.querySelector('.modal-body');
+const fullArticalBtn = document.querySelector('.full-article');
+
 export const renderBlock = (name) => {
   const cardContainer = document.createElement('div');
   cardContainer.classList.add('card', 'border-0');
@@ -45,7 +49,22 @@ export const renderPostItem = (data) => {
   link.href = data.link;
   link.textContent = data.title;
 
+  const button = document.createElement('button');
+  button.setAttribute('type', 'button');
+  button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+  button.dataset.bsToggle = 'modal';
+  button.dataset.bsTarget = '#modal';
+
+  button.addEventListener('click', () => {
+    modalTitle.textContent = data.title;
+    modalBody.textContent = data.description;
+    fullArticalBtn.href = data.link;
+    link.classList.remove('fw-bold');
+    link.classList.add('fw-normal');
+  });
+
   postItem.append(link);
+  postItem.append(button);
 
   return postItem;
 };

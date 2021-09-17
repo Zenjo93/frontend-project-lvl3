@@ -55,7 +55,16 @@ const renderFeed = (value) => {
 
 const renderPosts = (value) => {
   const postData = _.last(value);
-  const postsItems = postData.map((data) => renderPostItem(data));
+  const postsItems = postData.map((data) => {
+    const item = renderPostItem(data);
+
+    i18n.then((t) => {
+      item.querySelector('button').textContent = t('buttons.view');
+    });
+
+    return item;
+  });
+
   const postBlock = posts.querySelector('ul');
 
   postBlock.append(...postsItems);
@@ -63,6 +72,8 @@ const renderPosts = (value) => {
 
 // Переписать на диспечерезацию
 const render = (path, value) => {
+  console.log(path);
+  console.log(value);
   switch (path) {
     case 'form.processState':
       handleProcessState(value);
