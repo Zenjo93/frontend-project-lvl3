@@ -20,7 +20,6 @@ const validate = (url, feedList) => {
 };
 
 const addNewPosts = (feeds, posts) => feeds.forEach((feed) => {
-  console.log('ВЫЗОВ!');
   const { url, id } = feed;
   parseRSS(url).then((data) => {
     const [, newPosts] = data;
