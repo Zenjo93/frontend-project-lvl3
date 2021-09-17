@@ -15,19 +15,13 @@ const i18n = i18next.createInstance().init({
   resources: ru,
 });
 
-const handleProcessState = (processState) => {
-  // sent
-  switch (processState) {
-    case 'sent':
-      feedback.classList.add('text-success');
-      i18n.then((t) => {
-        feedback.textContent = t('processStatus.sent');
-      });
-      input.value = '';
-      input.focus();
-
-      break;
-  }
+const handleProcessState = () => {
+  feedback.classList.add('text-success');
+  i18n.then((t) => {
+    feedback.textContent = t('processStatus.sent');
+  });
+  input.value = '';
+  input.focus();
 };
 
 const handleError = (error) => {
@@ -73,10 +67,9 @@ const renderPosts = (value) => {
 // Переписать на диспечерезацию
 const render = (path, value) => {
   console.log(path);
-  console.log(value);
   switch (path) {
     case 'form.processState':
-      handleProcessState(value);
+      handleProcessState();
       break;
 
     // Форма не прошла валидацию (не корректный урл, дубль) - подсвечиваем красной рамкой
@@ -97,12 +90,18 @@ const render = (path, value) => {
       renderFeed(value);
       break;
 
+    case 'form.value':
+      break;
+
+    case 'feedList':
+      break;
+
     case 'posts':
       renderPosts(value);
       break;
 
-    // default:
-    //   throw new Error(`Unknow state at ${path} for ${value}`);
+    default:
+      throw new Error(`Unknown state at ${path} for ${value}`);
   }
 };
 

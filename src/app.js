@@ -29,14 +29,17 @@ const addNewPosts = (feeds, posts) => feeds.forEach((feed) => {
     const oldPostsNormalize = oldPosts.map((post) => ({
       title: post.title,
       link: post.link,
+      description: post.description,
+      uiStateRead: post.uiStateRead,
     }));
 
     const diff = _.differenceBy(oldPostsNormalize, newPosts, 'title');
-    diff.forEach((item) => item.id = id);
-    console.log(diff);
+    const diffItems = diff.map((item) => ({ ...item, id }));
 
-    if (diff.length !== 0) {
-      posts.push(diff);
+    console.log(...diffItems);
+
+    if (diffItems.length !== 0) {
+      posts.push(diffItems);
     }
   });
 });
@@ -70,13 +73,13 @@ export default () => {
 
         feed.id = watchedState.feedList.length;
         feed.url = watchedState.form.value;
-        posts.forEach((item) => item.postId = feed.id);
+        const postWithId = posts.map((item) => ({ ...item, postId: feed.id }));
 
         watchedState.form.processState = 'sent';
         watchedState.init = watchedState.init || true;
         watchedState.feedList.push(watchedState.form.value);
         watchedState.feeds.push(feed);
-        watchedState.posts.push(posts);
+        watchedState.posts.push(postWithId);
 
         setTimeout(function check() {
           addNewPosts(watchedState.feeds, watchedState.posts);
