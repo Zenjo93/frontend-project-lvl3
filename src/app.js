@@ -72,13 +72,13 @@ export default () => {
         return parseRSS(url);
       })
       .then((data) => {
+        watchedState.form.processState = 'sent';
         const [feed, posts] = data;
 
         feed.id = watchedState.feedList.length;
         feed.url = watchedState.form.value;
         const postWithId = posts.map((item) => ({ ...item, postId: feed.id }));
 
-        watchedState.form.processState = 'sent';
         watchedState.init = watchedState.init || true;
         watchedState.feedList.push(watchedState.form.value);
         watchedState.feeds.push(feed);
