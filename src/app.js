@@ -43,6 +43,7 @@ const addNewPosts = (feeds, posts) => feeds.forEach((feed) => {
 
 export default () => {
   const form = document.querySelector('form');
+  const input = document.querySelector('#url-input');
 
   const state = {
     init: false,
@@ -58,12 +59,12 @@ export default () => {
   };
 
   const watchedState = watch(state);
-
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     watchedState.form.error = null;
     watchedState.form.valid = true;
-    watchedState.form.value = form.url.value;
+    watchedState.form.value = input.value;
+    // console.log(e.target.value);
 
     validate(watchedState.form.value, watchedState.feedList)
       .then((url) => parseRSS(url))
