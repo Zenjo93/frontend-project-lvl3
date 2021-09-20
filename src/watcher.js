@@ -2,7 +2,8 @@ import onChange from 'on-change';
 import i18next from 'i18next';
 import _ from 'lodash';
 import ru from './locales/ru.js';
-import { renderBlock, renderFeedItem, renderPostItem } from './renderElements.js';
+import { renderBlock, buildFeedItem, buildPostItem } from './renderElements';
+// import { renderBlock, buildFeedItem, buildPostItem } from './renderElements.js';
 
 const i18n = i18next.createInstance().init({
   lng: 'ru',
@@ -70,7 +71,7 @@ const initRender = () => {
 const renderFeed = (value) => {
   const feeds = document.querySelector('.feeds');
 
-  const feedItem = renderFeedItem(_.last(value));
+  const feedItem = buildFeedItem(_.last(value));
   const feedBlock = feeds.querySelector('ul');
   feedBlock.append(feedItem);
 };
@@ -80,7 +81,7 @@ const renderPosts = (value) => {
 
   const postData = _.last(value);
   const postsItems = postData.map((data) => {
-    const item = renderPostItem(data);
+    const item = buildPostItem(data);
 
     i18n.then((t) => {
       item.querySelector('button').textContent = t('buttons.view');
@@ -97,7 +98,6 @@ const renderPosts = (value) => {
 // Переписать на диспечерезацию
 const render = (path, value) => {
   const input = document.getElementById('url-input');
-  console.log(path);
   switch (path) {
     case 'form.processState':
       handleProcessState(value);

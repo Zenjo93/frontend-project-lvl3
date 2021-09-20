@@ -18,7 +18,7 @@ export const renderBlock = (name) => {
   return cardContainer;
 };
 
-export const renderFeedItem = (data) => {
+export const buildFeedItem = (data) => {
   const feedItem = document.createElement('li');
   feedItem.classList.add('list-group-item', 'border-0', 'border-end-0');
 
@@ -35,7 +35,7 @@ export const renderFeedItem = (data) => {
   return feedItem;
 };
 
-export const renderPostItem = (data) => {
+export const buildPostItem = (data) => {
   const modalTitle = document.querySelector('.modal-title');
   const modalBody = document.querySelector('.modal-body');
   const fullArticalBtn = document.querySelector('.full-article');
