@@ -61,6 +61,8 @@ export default () => {
   const watchedState = watch(state);
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+
+    console.log(`input value: ${input.value}`);
     watchedState.form.error = null;
     watchedState.form.valid = true;
     watchedState.form.value = input.value;
