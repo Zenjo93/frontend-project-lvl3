@@ -67,7 +67,10 @@ export default () => {
     // console.log(e.target.value);
 
     validate(watchedState.form.value, watchedState.feedList)
-      .then((url) => parseRSS(url))
+      .then((url) => {
+        parseRSS(url);
+        watchedState.form.processState = 'sending';
+      })
       .then((data) => {
         const [feed, posts] = data;
 

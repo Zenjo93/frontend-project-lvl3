@@ -10,16 +10,33 @@ const i18n = i18next.createInstance().init({
   resources: ru,
 });
 
-const handleProcessState = () => {
+const handleProcessState = (value) => {
   const input = document.getElementById('url-input');
   const feedback = document.querySelector('p.feedback');
+  const button = document.querySelector('button[type=submit]');
 
-  feedback.classList.add('text-success');
-  i18n.then((t) => {
-    feedback.textContent = t('processStatus.sent');
-  });
-  input.value = '';
-  input.focus();
+  switch (value) {
+    case 'sent':
+      input.removeAttribute('readonly');
+      button.disabled = false;
+
+      feedback.classList.add('text-success');
+      i18n.then((t) => {
+        feedback.textContent = t('processStatus.sent');
+      });
+      input.value = '';
+      input.focus();
+
+      break;
+
+    case 'sending':
+      input.setAttribute('readonly', 'true');
+      button.disabled = true;
+      break;
+
+    default:
+      throw new Error('Unknown processState');
+  }
 };
 
 const handleError = (error) => {
@@ -78,7 +95,7 @@ const render = (path, value) => {
   console.log(path);
   switch (path) {
     case 'form.processState':
-      handleProcessState();
+      handleProcessState(value);
       break;
 
     // Форма не прошла валидацию (не корректный урл, дубль) - подсвечиваем красной рамкой
