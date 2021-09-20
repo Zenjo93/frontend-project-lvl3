@@ -57,7 +57,7 @@ export const renderPostItem = (data) => {
 
   button.addEventListener('click', () => {
     modalTitle.textContent = data.title;
-    modalBody.textContent = data.description;
+    modalBody.innerHTML = data.description;
     fullArticalBtn.href = data.link;
     link.classList.remove('fw-bold');
     link.classList.add('fw-normal');
