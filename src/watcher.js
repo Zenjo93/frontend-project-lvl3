@@ -114,4 +114,5 @@ const render = (path, value) => {
   }
 };
 
+// Добавить выбор элементов через объект и передачу элементов в рендеринг
 export default (state) => onChange(state, render);

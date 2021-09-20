@@ -42,4 +42,5 @@ const parseRSS = (rss) => {
 };
 
 export default (url) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`)
-  .then((rss) => parseRSS(rss), () => new Error('processStatus.errors.networkError'));
+  .catch(() => new Error('processStatus.errors.networkError'))
+  .then((rss) => parseRSS(rss));
