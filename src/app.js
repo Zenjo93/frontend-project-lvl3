@@ -3,8 +3,6 @@ import _ from 'lodash';
 import parseRSS from './parserRSS.js';
 import watch from './watcher.js';
 
-const form = document.querySelector('form');
-
 yup.setLocale({
   string: {
     url: 'processStatus.errors.invalidURL',
@@ -44,6 +42,8 @@ const addNewPosts = (feeds, posts) => feeds.forEach((feed) => {
 });
 
 export default () => {
+  const form = document.querySelector('form');
+
   const state = {
     init: false,
     feedList: [],
