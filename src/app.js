@@ -68,8 +68,8 @@ export default () => {
 
     validate(watchedState.form.value, watchedState.feedList)
       .then((url) => {
-        parseRSS(url);
         watchedState.form.processState = 'sending';
+        return parseRSS(url);
       })
       .then((data) => {
         const [feed, posts] = data;
