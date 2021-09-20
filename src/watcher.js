@@ -4,7 +4,6 @@ import _ from 'lodash';
 import ru from './locales/ru.js';
 import { renderBlock, renderFeedItem, renderPostItem } from './renderElements.js';
 
-const input = document.getElementById('url-input');
 const feedback = document.querySelector('p.feedback');
 const feeds = document.querySelector('.feeds');
 const posts = document.querySelector('.posts');
@@ -16,6 +15,7 @@ const i18n = i18next.createInstance().init({
 });
 
 const handleProcessState = () => {
+  const input = document.getElementById('url-input');
   feedback.classList.add('text-success');
   i18n.then((t) => {
     feedback.textContent = t('processStatus.sent');
@@ -66,6 +66,7 @@ const renderPosts = (value) => {
 
 // Переписать на диспечерезацию
 const render = (path, value) => {
+  const input = document.getElementById('url-input');
   console.log(path);
   switch (path) {
     case 'form.processState':
