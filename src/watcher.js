@@ -4,10 +4,6 @@ import _ from 'lodash';
 import ru from './locales/ru.js';
 import { renderBlock, renderFeedItem, renderPostItem } from './renderElements.js';
 
-const feedback = document.querySelector('p.feedback');
-const feeds = document.querySelector('.feeds');
-const posts = document.querySelector('.posts');
-
 const i18n = i18next.createInstance().init({
   lng: 'ru',
   debug: true,
@@ -16,6 +12,8 @@ const i18n = i18next.createInstance().init({
 
 const handleProcessState = () => {
   const input = document.getElementById('url-input');
+  const feedback = document.querySelector('p.feedback');
+
   feedback.classList.add('text-success');
   i18n.then((t) => {
     feedback.textContent = t('processStatus.sent');
@@ -25,6 +23,8 @@ const handleProcessState = () => {
 };
 
 const handleError = (error) => {
+  const feedback = document.querySelector('p.feedback');
+
   if (error === null) {
     feedback.classList.remove('text-danger');
     feedback.textContent = '';
@@ -37,17 +37,25 @@ const handleError = (error) => {
 };
 
 const initRender = () => {
+  const posts = document.querySelector('.posts');
+
+  const feeds = document.querySelector('.feeds');
+
   feeds.append(renderBlock('Фиды'));
   posts.append(renderBlock('Посты'));
 };
 
 const renderFeed = (value) => {
+  const feeds = document.querySelector('.feeds');
+
   const feedItem = renderFeedItem(_.last(value));
   const feedBlock = feeds.querySelector('ul');
   feedBlock.append(feedItem);
 };
 
 const renderPosts = (value) => {
+  const posts = document.querySelector('.posts');
+
   const postData = _.last(value);
   const postsItems = postData.map((data) => {
     const item = renderPostItem(data);
