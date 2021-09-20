@@ -33,8 +33,6 @@ const addNewPosts = (feeds, posts) => feeds.forEach((feed) => {
     const diff = _.differenceBy(oldPostsNormalize, newPosts, 'title');
     const diffItems = diff.map((item) => ({ ...item, id }));
 
-    console.log(...diffItems);
-
     if (diffItems.length !== 0) {
       posts.push(diffItems);
     }
@@ -51,9 +49,9 @@ export default () => {
     feeds: [],
     posts: [],
     form: {
-      processState: 'filling', // init, filling, sent, error
-      valid: true, // красная рамка
-      error: null, // ключ ошибки
+      processState: 'filling',
+      valid: true,
+      error: null,
       value: '',
     },
   };
@@ -65,7 +63,6 @@ export default () => {
     watchedState.form.error = null;
     watchedState.form.valid = true;
     watchedState.form.value = input.value;
-    console.log(watchedState.form.value);
 
     validate(watchedState.form.value, watchedState.feedList)
       .then((url) => {

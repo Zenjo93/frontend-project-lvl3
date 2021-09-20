@@ -3,7 +3,6 @@ import i18next from 'i18next';
 import _ from 'lodash';
 import ru from './locales/ru.js';
 import { renderBlock, buildFeedItem, buildPostItem } from './renderElements';
-// import { renderBlock, buildFeedItem, buildPostItem } from './renderElements.js';
 
 const i18n = i18next.createInstance().init({
   lng: 'ru',
