@@ -1,7 +1,3 @@
-const modalTitle = document.querySelector('.modal-title');
-const modalBody = document.querySelector('.modal-body');
-const fullArticalBtn = document.querySelector('.full-article');
-
 export const renderBlock = (name) => {
   const cardContainer = document.createElement('div');
   cardContainer.classList.add('card', 'border-0');
@@ -40,6 +36,10 @@ export const renderFeedItem = (data) => {
 };
 
 export const renderPostItem = (data) => {
+  const modalTitle = document.querySelector('.modal-title');
+  const modalBody = document.querySelector('.modal-body');
+  const fullArticalBtn = document.querySelector('.full-article');
+
   const postItem = document.createElement('li');
   postItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0',
     'border-end-0');
