@@ -17,10 +17,8 @@ const handleProcessState = (value) => {
 
   switch (value) {
     case 'sent':
-      console.log(`3 sent process begin has readonly: ${input.hasAttribute('readonly')}`);
       input.removeAttribute('readonly');
       button.disabled = false;
-      console.log(`4 sent process after has readonly: ${input.hasAttribute('readonly')}`);
 
       feedback.classList.add('text-success');
       i18n.then((t) => {
@@ -32,11 +30,8 @@ const handleProcessState = (value) => {
       break;
 
     case 'sending':
-      console.log(`1 being sending has readonly: ${input.hasAttribute('readonly')}`);
       input.setAttribute('readonly', 'true');
       button.disabled = true;
-      console.log(`2 after sending has readonly: ${input.hasAttribute('readonly')}`);
-
       break;
 
     default:

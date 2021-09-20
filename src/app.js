@@ -62,11 +62,10 @@ export default () => {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    console.log(`input value: ${input.value}`);
     watchedState.form.error = null;
     watchedState.form.valid = true;
     watchedState.form.value = input.value;
-    // console.log(e.target.value);
+    console.log(watchedState.form.value);
 
     validate(watchedState.form.value, watchedState.feedList)
       .then((url) => {
