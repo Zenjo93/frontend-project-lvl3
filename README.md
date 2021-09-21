@@ -5,11 +5,11 @@
 
 ## Frontend Project #3 - RSS Feed
 
-###Description
+### Description
 RSS Feed app - service for aggregating RSS-feed and convenient way of reading it from various sources (e.g. blogs).
 It allows an unlimited number of RSS feeds, updates them itself and updates new entries to the general stream.
 
-###Key technologies used in project
+### Key technologies used in project
 - Vanilla JS
 - Asynchronous (Promises)
 - DOM API
