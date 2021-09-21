@@ -26,7 +26,6 @@ const handleProcessState = (value) => {
       });
       input.value = '';
       input.focus();
-
       break;
 
     case 'sending':
