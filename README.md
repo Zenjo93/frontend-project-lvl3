@@ -14,6 +14,7 @@ It allows an unlimited number of RSS feeds, updates them itself and updates new 
 - Asynchronous (Promises)
 - DOM API
 - Webpack
+- i18next
 - Git Actions
 - Bootstrap
 
