@@ -50,7 +50,6 @@ export default (state) => {
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    console.log(watchedState.feedList);
     const { value } = input;
 
     watchedState.form = {
