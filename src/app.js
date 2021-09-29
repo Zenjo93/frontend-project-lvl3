@@ -1,7 +1,6 @@
 import * as yup from 'yup';
 import _ from 'lodash';
 import parseRSS from './parserRSS.js';
-import watch from './watcher.js';
 
 yup.setLocale({
   string: {
@@ -17,54 +16,50 @@ const validate = (url, feedList) => {
   return validationSchema.validate(url);
 };
 
-const addNewPosts = (feeds, posts) => feeds.forEach((feed) => {
-  const { url, id } = feed;
-  parseRSS(url).then((data) => {
-    const [, newPosts] = data;
-    const oldPosts = posts.flatMap((post) => post).filter((post) => post.postId === id);
+const addNewPosts = (feeds, posts) => {
+  feeds.forEach((feed) => {
+    const { url, id } = feed;
 
-    const oldPostsNormalize = oldPosts.map((post) => ({
-      title: post.title,
-      link: post.link,
-      description: post.description,
-      uiStateRead: post.uiStateRead,
-    }));
+    parseRSS(url).then((data) => {
+      const [, newPosts] = data;
+      const oldPosts = posts.flatMap((post) => post).filter((post) => post.postId === id);
 
-    const diff = _.differenceBy(oldPostsNormalize, newPosts, 'title');
-    const diffItems = diff.map((item) => ({ ...item, id }));
+      const oldPostsNormalize = oldPosts.map((post) => ({
+        title: post.title,
+        link: post.link,
+        description: post.description,
+        uiStateRead: post.uiStateRead,
+      }));
 
-    if (diffItems.length !== 0) {
-      posts.push(diffItems);
-    }
+      const diff = _.differenceBy(oldPostsNormalize, newPosts, 'title');
+      const diffItems = diff.map((item) => ({ ...item, id }));
+
+      if (diffItems.length !== 0) {
+        posts.push(diffItems);
+      }
+    });
   });
-});
 
-export default () => {
+  return Promise.resolve();
+};
+
+export default (state) => {
+  const watchedState = state;
   const form = document.querySelector('form');
   const input = document.querySelector('#url-input');
 
-  const state = {
-    init: false,
-    feedList: [],
-    feeds: [],
-    posts: [],
-    form: {
-      processState: 'filling',
-      valid: true,
-      error: null,
-      value: '',
-    },
-  };
-
-  const watchedState = watch(state);
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+    console.log(watchedState.feedList);
+    const { value } = input;
 
-    watchedState.form.error = null;
-    watchedState.form.valid = true;
-    watchedState.form.value = input.value;
+    watchedState.form = {
+      ...watchedState.form,
+      valid: true,
+      error: null,
+    };
 
-    validate(watchedState.form.value, watchedState.feedList)
+    validate(value, watchedState.feedList)
       .then((url) => {
         watchedState.form.processState = 'sending';
         return parseRSS(url);
@@ -74,19 +69,20 @@ export default () => {
         const [feed, posts] = data;
 
         feed.id = watchedState.feedList.length;
-        feed.url = watchedState.form.value;
+        feed.url = value;
         const postWithId = posts.map((item) => ({ ...item, postId: feed.id }));
 
         watchedState.init = watchedState.init || true;
-        watchedState.feedList.push(watchedState.form.value);
+        watchedState.feedList.push(value);
         watchedState.feeds.push(feed);
         watchedState.posts.push(postWithId);
 
         setTimeout(function check() {
-          addNewPosts(watchedState.feeds, watchedState.posts);
-          setTimeout(check, 5000);
+          addNewPosts(watchedState.feeds, watchedState.posts)
+            .then(() => setTimeout(check, 5000));
         }, 5000);
-      }).catch((err) => {
+      })
+      .catch((err) => {
         watchedState.form.valid = false;
         watchedState.form.error = err.message;
       });

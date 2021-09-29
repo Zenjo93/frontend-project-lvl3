@@ -1,16 +1,8 @@
 import onChange from 'on-change';
-import i18next from 'i18next';
 import _ from 'lodash';
-import ru from './locales/ru.js';
 import { renderBlock, buildFeedItem, buildPostItem } from './renderElements';
 
-const i18n = i18next.createInstance().init({
-  lng: 'ru',
-  debug: true,
-  resources: ru,
-});
-
-const handleProcessState = (value) => {
+const handleProcessState = (value, translate) => {
   const input = document.getElementById('url-input');
   const feedback = document.querySelector('p.feedback');
   const button = document.querySelector('button[type=submit]');
@@ -20,11 +12,12 @@ const handleProcessState = (value) => {
       input.removeAttribute('readonly');
       button.disabled = false;
 
+      feedback.classList.remove('text-danger');
       feedback.classList.add('text-success');
-      i18n.then((t) => {
-        feedback.textContent = t('processStatus.sent');
-      });
+      feedback.textContent = translate('processStatus.sent');
+
       input.value = '';
+      input.classList.remove('is-invalid');
       input.focus();
       break;
 
@@ -38,7 +31,7 @@ const handleProcessState = (value) => {
   }
 };
 
-const handleError = (error) => {
+const handleError = (error, translate) => {
   const feedback = document.querySelector('p.feedback');
   const button = document.querySelector('button[type=submit]');
   const input = document.getElementById('url-input');
@@ -51,15 +44,12 @@ const handleError = (error) => {
     feedback.textContent = '';
   } else {
     feedback.classList.add('text-danger');
-    i18n.then((t) => {
-      feedback.textContent = t(error);
-    });
+    feedback.textContent = translate(error);
   }
 };
 
 const initRender = () => {
   const posts = document.querySelector('.posts');
-
   const feeds = document.querySelector('.feeds');
 
   feeds.append(renderBlock('Фиды'));
@@ -74,16 +64,13 @@ const renderFeed = (value) => {
   feedBlock.append(feedItem);
 };
 
-const renderPosts = (value) => {
+const renderPosts = (value, translate) => {
   const posts = document.querySelector('.posts');
 
   const postData = _.last(value);
   const postsItems = postData.map((data) => {
     const item = buildPostItem(data);
-
-    i18n.then((t) => {
-      item.querySelector('button').textContent = t('buttons.view');
-    });
+    item.querySelector('button').textContent = translate('buttons.view');
 
     return item;
   });
@@ -93,22 +80,20 @@ const renderPosts = (value) => {
   postBlock.append(...postsItems);
 };
 
-// Переписать на диспечерезацию
-const render = (path, value) => {
+const render = (translate) => (path, value) => {
   const input = document.getElementById('url-input');
+  console.log(path);
   switch (path) {
     case 'form.processState':
-      handleProcessState(value);
+      handleProcessState(value, translate);
       break;
 
-    // Форма не прошла валидацию (не корректный урл, дубль) - подсвечиваем красной рамкой
     case 'form.valid':
       input.classList.toggle('is-invalid', !value);
       break;
 
-    // Возникла ошибка (Ошибка сети, Ресурс не содержит валидный RSS) - высвечиваем текст
     case 'form.error':
-      handleError(value);
+      handleError(value, translate);
       break;
 
     case 'init':
@@ -119,14 +104,14 @@ const render = (path, value) => {
       renderFeed(value);
       break;
 
-    case 'form.value':
+    case 'posts':
+      renderPosts(value, translate);
       break;
 
     case 'feedList':
       break;
 
-    case 'posts':
-      renderPosts(value);
+    case 'form':
       break;
 
     default:
@@ -134,5 +119,4 @@ const render = (path, value) => {
   }
 };
 
-// Добавить выбор элементов через объект и передачу элементов в рендеринг
-export default (state) => onChange(state, render);
+export default (state, translate) => onChange(state, render(translate));

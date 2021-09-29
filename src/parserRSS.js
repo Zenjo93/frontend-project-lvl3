@@ -27,9 +27,11 @@ const getPosts = (xmlData) => {
 
 const isValidRSS = (xmlDOM) => !xmlDOM.getElementsByTagName('parsererror').length;
 
+// TODO: сейчас это не rss, это response объект, а нужна строка: rss.data.contents
 const parseRSS = (rss) => {
   const parser = new DOMParser();
   const xmlData = parser.parseFromString(rss.data.contents, 'text/xml');
+  console.log(xmlData);
 
   if (!isValidRSS(xmlData)) {
     throw new Error('processStatus.errors.invalidRSS');
