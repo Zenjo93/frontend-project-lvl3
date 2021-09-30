@@ -1,6 +1,7 @@
 import * as yup from 'yup';
 import _ from 'lodash';
-import parseRSS from './parserRSS.js';
+import axios from 'axios';
+import parse from './parserRSS.js';
 
 yup.setLocale({
   string: {
@@ -17,27 +18,28 @@ const validate = (url, feedList) => {
 };
 
 const addNewPosts = (feeds, posts) => {
+  console.log('ADDING NEW POSTS');
   feeds.forEach((feed) => {
     const { url, id } = feed;
+    axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`)
+      .then((xml) => {
+        const { posts: newPosts } = parse(xml);
+        const oldPosts = posts.flatMap((post) => post).filter((post) => post.postId === id);
 
-    parseRSS(url).then((data) => {
-      const [, newPosts] = data;
-      const oldPosts = posts.flatMap((post) => post).filter((post) => post.postId === id);
+        const oldPostsNormalize = oldPosts.map((post) => ({
+          title: post.title,
+          link: post.link,
+          description: post.description,
+          uiStateRead: post.uiStateRead,
+        }));
 
-      const oldPostsNormalize = oldPosts.map((post) => ({
-        title: post.title,
-        link: post.link,
-        description: post.description,
-        uiStateRead: post.uiStateRead,
-      }));
+        const diff = _.differenceBy(oldPostsNormalize, newPosts, 'title');
+        const diffItems = diff.map((item) => ({ ...item, id }));
 
-      const diff = _.differenceBy(oldPostsNormalize, newPosts, 'title');
-      const diffItems = diff.map((item) => ({ ...item, id }));
-
-      if (diffItems.length !== 0) {
-        posts.push(diffItems);
-      }
-    });
+        if (diffItems.length !== 0) {
+          posts.push(diffItems);
+        }
+      });
   });
 
   return Promise.resolve();
@@ -61,11 +63,13 @@ export default (state) => {
     validate(value, watchedState.feedList)
       .then((url) => {
         watchedState.form.processState = 'sending';
-        return parseRSS(url);
+        return axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`);
       })
-      .then((data) => {
+      .catch(() => { throw new Error('processStatus.errors.networkError'); })
+      .then((xml) => {
         watchedState.form.processState = 'sent';
-        const [feed, posts] = data;
+
+        const { feed, posts } = parse(xml);
 
         feed.id = watchedState.feedList.length;
         feed.url = value;

@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 const getFeed = (xmlData) => {
   const title = xmlData.querySelector('title').textContent;
   const description = xmlData.querySelector('description').textContent;
@@ -27,11 +25,9 @@ const getPosts = (xmlData) => {
 
 const isValidRSS = (xmlDOM) => !xmlDOM.getElementsByTagName('parsererror').length;
 
-// TODO: сейчас это не rss, это response объект, а нужна строка: rss.data.contents
-const parseRSS = (rss) => {
+export default (xml) => {
   const parser = new DOMParser();
-  const xmlData = parser.parseFromString(rss.data.contents, 'text/xml');
-  console.log(xmlData);
+  const xmlData = parser.parseFromString(xml.data.contents, 'text/xml');
 
   if (!isValidRSS(xmlData)) {
     throw new Error('processStatus.errors.invalidRSS');
@@ -40,9 +36,9 @@ const parseRSS = (rss) => {
   const feed = getFeed(xmlData);
   const posts = getPosts(xmlData);
 
-  return [feed, posts];
+  return { feed, posts };
 };
 
-export default (url) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`)
-  .catch(() => { throw new Error('processStatus.errors.networkError'); })
-  .then((rss) => parseRSS(rss));
+// export default (url) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`)
+//   .catch(() => { throw new Error('processStatus.errors.networkError'); })
+//   .then((rss) => parseRSS(rss));
