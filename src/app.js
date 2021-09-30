@@ -63,9 +63,9 @@ export default (state) => {
     validate(value, watchedState.feedList)
       .then((url) => {
         watchedState.form.processState = 'sending';
-        return axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`);
+        return axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`)
+          .catch(() => { throw new Error('processStatus.errors.networkError'); });
       })
-      .catch(() => { throw new Error('processStatus.errors.networkError'); })
       .then((xml) => {
         watchedState.form.processState = 'sent';
 
