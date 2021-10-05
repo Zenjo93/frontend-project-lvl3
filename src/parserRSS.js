@@ -9,7 +9,6 @@ const getFeed = (xmlData) => {
 
 const getPosts = (xmlData) => {
   const items = Array.from(xmlData.getElementsByTagName('item'));
-
   return items.map((item) => {
     const title = item.querySelector('title').textContent;
     const link = item.querySelector('link').textContent;
@@ -18,7 +17,6 @@ const getPosts = (xmlData) => {
       title,
       link,
       description,
-
     };
   });
 };
@@ -37,5 +35,5 @@ export default (xml) => {
   const feed = getFeed(xmlData);
   const posts = getPosts(xmlData);
 
-  return { feed, posts };
+  return { feed, parsedPosts: posts };
 };

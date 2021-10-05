@@ -56,28 +56,25 @@ const initRender = () => {
   posts.append(renderBlock('Посты'));
 };
 
-const renderFeed = (value) => {
-  const feeds = document.querySelector('.feeds');
+const renderFeed = (feeds) => {
+  const feedBlock = document.querySelector('.feeds ul');
 
-  const feedItem = buildFeedItem(_.last(value));
-  const feedBlock = feeds.querySelector('ul');
-  feedBlock.append(feedItem);
+  const feedItem = buildFeedItem(_.last(feeds));
+  feedBlock.prepend(feedItem);
 };
 
-const renderPosts = (value, translate) => {
-  const posts = document.querySelector('.posts');
+const renderPosts = (posts, translate) => {
+  console.log(posts);
+  const postBlock = document.querySelector('.posts ul');
 
-  const postData = _.last(value);
-  const postsItems = postData.map((data) => {
-    const item = buildPostItem(data);
+  const postsItems = posts.map((post) => {
+    const item = buildPostItem(post);
     item.querySelector('button').textContent = translate('buttons.view');
 
     return item;
   });
 
-  const postBlock = posts.querySelector('ul');
-
-  postBlock.append(...postsItems);
+  postBlock.prepend(...postsItems);
 };
 
 const render = (translate) => (path, value) => {

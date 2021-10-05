@@ -16,7 +16,7 @@ const addNewPosts = ({ feeds, posts }) => {
     const proxyUrl = buildProxyUrl(url);
     axios.get(proxyUrl)
       .then((xml) => {
-        const { posts: newPosts } = parse(xml);
+        const { parsedPosts: newPosts } = parse(xml);
 
         const oldPosts = posts.flatMap((post) => post).filter((post) => post.postId === id);
         // const oldPostsTitles = posts.flatMap((post) => post).map((post) => post.title);
@@ -72,6 +72,7 @@ export default (state) => {
     validate(value, watchedState.feedList)
       .then((url) => {
         watchedState.form.processState = 'sending';
+
         const proxyUrl = buildProxyUrl(url);
         return axios.get(proxyUrl)
           .catch(() => { throw new Error('processStatus.errors.networkError'); });
@@ -79,21 +80,20 @@ export default (state) => {
       .then((xml) => {
         watchedState.form.processState = 'sent';
 
-        const { feed, posts } = parse(xml);
-
+        const { feed, parsedPosts } = parse(xml);
         feed.id = _.uniqueId();
         feed.url = value;
-        const postsWithId = posts.map((item) => ({ ...item, postId: feed.id, uiStateRead: false }));
+        const posts = parsedPosts.map((item) => ({ ...item, postId: feed.id, uiStateRead: false }));
 
         watchedState.init = watchedState.init || true;
         watchedState.feedList.push(value);
         watchedState.feeds.push(feed);
-        watchedState.posts.push(postsWithId);
+        watchedState.posts.push(...posts);
 
-        setTimeout(function check() {
-          addNewPosts(watchedState)
-            .finally(() => setTimeout(check, 5000));
-        }, 5000);
+        // setTimeout(function check() {
+        //   addNewPosts(watchedState)
+        //     .finally(() => setTimeout(check, 5000));
+        // }, 5000);
       })
       .catch((err) => {
         watchedState.form.valid = false;
