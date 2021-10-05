@@ -3,28 +3,26 @@ import _ from 'lodash';
 import axios from 'axios';
 import parse from './parserRSS.js';
 
-yup.setLocale({
-  string: {
-    url: 'processStatus.errors.invalidURL',
-  },
-  mixed: {
-    notOneOf: 'processStatus.errors.duplicatedURL',
-  },
-});
-
 const validate = (url, feedList) => {
   const validationSchema = yup.string().url().notOneOf(feedList).required();
   return validationSchema.validate(url);
 };
 
-const addNewPosts = (feeds, posts) => {
-  console.log('ADDING NEW POSTS');
+const buildProxyUrl = (url) => `https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`;
+
+const addNewPosts = ({ feeds, posts }) => {
   feeds.forEach((feed) => {
     const { url, id } = feed;
-    axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`)
+    const proxyUrl = buildProxyUrl(url);
+    axios.get(proxyUrl)
       .then((xml) => {
         const { posts: newPosts } = parse(xml);
+
         const oldPosts = posts.flatMap((post) => post).filter((post) => post.postId === id);
+        // const oldPostsTitles = posts.flatMap((post) => post).map((post) => post.title);
+
+        // console.log(oldPosts);
+        // console.log(oldPostsTitles);
 
         const oldPostsNormalize = oldPosts.map((post) => ({
           title: post.title,
@@ -45,7 +43,18 @@ const addNewPosts = (feeds, posts) => {
   return Promise.resolve();
 };
 
+// TODO: Пока не забыл, ты добавляешь все новые посты и фиды в конец, но логично добавлять в начало
+
 export default (state) => {
+  yup.setLocale({
+    string: {
+      url: 'processStatus.errors.invalidURL',
+    },
+    mixed: {
+      notOneOf: 'processStatus.errors.duplicatedURL',
+    },
+  });
+
   const watchedState = state;
   const form = document.querySelector('form');
   const input = document.querySelector('#url-input');
@@ -63,7 +72,8 @@ export default (state) => {
     validate(value, watchedState.feedList)
       .then((url) => {
         watchedState.form.processState = 'sending';
-        return axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`)
+        const proxyUrl = buildProxyUrl(url);
+        return axios.get(proxyUrl)
           .catch(() => { throw new Error('processStatus.errors.networkError'); });
       })
       .then((xml) => {
@@ -71,18 +81,18 @@ export default (state) => {
 
         const { feed, posts } = parse(xml);
 
-        feed.id = watchedState.feedList.length;
+        feed.id = _.uniqueId();
         feed.url = value;
-        const postWithId = posts.map((item) => ({ ...item, postId: feed.id }));
+        const postsWithId = posts.map((item) => ({ ...item, postId: feed.id, uiStateRead: false }));
 
         watchedState.init = watchedState.init || true;
         watchedState.feedList.push(value);
         watchedState.feeds.push(feed);
-        watchedState.posts.push(postWithId);
+        watchedState.posts.push(postsWithId);
 
         setTimeout(function check() {
-          addNewPosts(watchedState.feeds, watchedState.posts)
-            .then(() => setTimeout(check, 5000));
+          addNewPosts(watchedState)
+            .finally(() => setTimeout(check, 5000));
         }, 5000);
       })
       .catch((err) => {

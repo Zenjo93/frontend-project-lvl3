@@ -18,7 +18,7 @@ const getPosts = (xmlData) => {
       title,
       link,
       description,
-      uiStateRead: false,
+
     };
   });
 };
@@ -28,6 +28,7 @@ const isValidRSS = (xmlDOM) => !xmlDOM.getElementsByTagName('parsererror').lengt
 export default (xml) => {
   const parser = new DOMParser();
   const xmlData = parser.parseFromString(xml.data.contents, 'text/xml');
+  console.log(typeof xmlData);
 
   if (!isValidRSS(xmlData)) {
     throw new Error('processStatus.errors.invalidRSS');
@@ -38,7 +39,3 @@ export default (xml) => {
 
   return { feed, posts };
 };
-
-// export default (url) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`)
-//   .catch(() => { throw new Error('processStatus.errors.networkError'); })
-//   .then((rss) => parseRSS(rss));
