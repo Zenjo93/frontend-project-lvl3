@@ -51,22 +51,19 @@ const handleError = (error, translate) => {
 const initRender = () => {
   const posts = document.querySelector('.posts');
   const feeds = document.querySelector('.feeds');
-
   feeds.append(renderBlock('Фиды'));
   posts.append(renderBlock('Посты'));
 };
 
 const renderFeed = (feeds) => {
   const feedBlock = document.querySelector('.feeds ul');
-
-  const feedItem = buildFeedItem(_.last(feeds));
-  feedBlock.prepend(feedItem);
+  const feedItems = feeds.map((feed) => buildFeedItem(feed));
+  feedBlock.innerHTML = '';
+  feedBlock.append(...feedItems);
 };
 
 const renderPosts = (posts, translate) => {
-  console.log(posts);
   const postBlock = document.querySelector('.posts ul');
-
   const postsItems = posts.map((post) => {
     const item = buildPostItem(post);
     item.querySelector('button').textContent = translate('buttons.view');
@@ -74,12 +71,13 @@ const renderPosts = (posts, translate) => {
     return item;
   });
 
-  postBlock.prepend(...postsItems);
+  postBlock.innerHTML = '';
+  postBlock.append(...postsItems);
 };
 
 const render = (translate) => (path, value) => {
   const input = document.getElementById('url-input');
-  console.log(path);
+  console.log(value);
   switch (path) {
     case 'form.processState':
       handleProcessState(value, translate);

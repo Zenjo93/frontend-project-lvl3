@@ -3,12 +3,15 @@ import _ from 'lodash';
 import axios from 'axios';
 import parse from './parserRSS.js';
 
-const validate = (url, feedList) => {
+const validate = (url, { feedList }) => {
   const validationSchema = yup.string().url().notOneOf(feedList).required();
   return validationSchema.validate(url);
 };
 
 const buildProxyUrl = (url) => `https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`;
+
+// TODO: излишняя логика. От вложенности избавляемся, нормализация не нужна. Можно сравнить по title
+// TODO: попробовать через new Promise(resolve, reject)
 
 const addNewPosts = ({ feeds, posts }) => {
   feeds.forEach((feed) => {
@@ -43,9 +46,11 @@ const addNewPosts = ({ feeds, posts }) => {
   return Promise.resolve();
 };
 
-// TODO: Пока не забыл, ты добавляешь все новые посты и фиды в конец, но логично добавлять в начало
-
 export default (state) => {
+  const watchedState = state;
+  const form = document.querySelector('form');
+  const input = document.querySelector('#url-input');
+
   yup.setLocale({
     string: {
       url: 'processStatus.errors.invalidURL',
@@ -55,26 +60,20 @@ export default (state) => {
     },
   });
 
-  const watchedState = state;
-  const form = document.querySelector('form');
-  const input = document.querySelector('#url-input');
-
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const { value } = input;
 
-    watchedState.form = {
-      ...watchedState.form,
-      valid: true,
-      error: null,
-    };
+    const { value: inputValue } = input;
+    watchedState.form = { ...watchedState.form, valid: true, error: null };
 
-    validate(value, watchedState.feedList)
+    validate(inputValue, watchedState)
       .then((url) => {
         watchedState.form.processState = 'sending';
 
         const proxyUrl = buildProxyUrl(url);
+
         return axios.get(proxyUrl)
+        // TODO: axios возвращает в ошибке флаг isAxiosError
           .catch(() => { throw new Error('processStatus.errors.networkError'); });
       })
       .then((xml) => {
@@ -82,13 +81,13 @@ export default (state) => {
 
         const { feed, parsedPosts } = parse(xml);
         feed.id = _.uniqueId();
-        feed.url = value;
-        const posts = parsedPosts.map((item) => ({ ...item, postId: feed.id, uiStateRead: false }));
+        feed.url = inputValue;
+        const posts = parsedPosts.map((item) => ({ ...item, postId: feed.id }));
 
         watchedState.init = watchedState.init || true;
-        watchedState.feedList.push(value);
-        watchedState.feeds.push(feed);
-        watchedState.posts.push(...posts);
+        watchedState.feedList.push(inputValue);
+        watchedState.feeds.unshift(feed);
+        watchedState.posts.unshift(...posts);
 
         // setTimeout(function check() {
         //   addNewPosts(watchedState)
