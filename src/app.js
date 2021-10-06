@@ -34,6 +34,16 @@ const addNewPosts = ({ feeds, posts }) => new Promise((resolve) => {
   resolve('success');
 });
 
+const getErrorMessage = (error) => {
+  if (axios.isAxiosError(error)) {
+    return 'processStatus.errors.networkError';
+  }
+  if (error.message === 'parsing error') {
+    return 'processStatus.errors.invalidRSS';
+  }
+  return error.message;
+};
+
 export default (state) => {
   const watchedState = state;
   const form = document.querySelector('form');
@@ -59,10 +69,7 @@ export default (state) => {
         watchedState.form.processState = 'sending';
 
         const proxyUrl = buildProxyUrl(url);
-
-        return axios.get(proxyUrl)
-        // TODO: axios возвращает в ошибке флаг isAxiosError
-          .catch(() => { throw new Error('processStatus.errors.networkError'); });
+        return axios.get(proxyUrl);
       })
       .then((xml) => {
         watchedState.form.processState = 'sent';
@@ -82,9 +89,9 @@ export default (state) => {
             .finally(() => setTimeout(check, 5000));
         }, 5000);
       })
-      .catch((err) => {
+      .catch((error) => {
         watchedState.form.valid = false;
-        watchedState.form.error = err.message;
+        watchedState.form.error = getErrorMessage(error);
       });
   });
 };

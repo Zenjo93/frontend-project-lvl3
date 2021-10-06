@@ -28,7 +28,8 @@ export default (xml) => {
   const xmlData = parser.parseFromString(xml.data.contents, 'text/xml');
 
   if (!isValidRSS(xmlData)) {
-    throw new Error('processStatus.errors.invalidRSS');
+    throw new Error('parsing error');
+    // throw new Error('processStatus.errors.invalidRSS');
   }
 
   const feed = getFeed(xmlData);
