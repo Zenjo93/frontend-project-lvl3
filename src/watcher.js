@@ -1,5 +1,4 @@
 import onChange from 'on-change';
-import _ from 'lodash';
 import { renderBlock, buildFeedItem, buildPostItem } from './renderElements';
 
 const handleProcessState = (value, translate) => {
@@ -77,7 +76,6 @@ const renderPosts = (posts, translate) => {
 
 const render = (translate) => (path, value) => {
   const input = document.getElementById('url-input');
-  console.log(value);
   switch (path) {
     case 'form.processState':
       handleProcessState(value, translate);

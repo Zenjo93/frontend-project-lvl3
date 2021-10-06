@@ -10,41 +10,29 @@ const validate = (url, { feedList }) => {
 
 const buildProxyUrl = (url) => `https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`;
 
-// TODO: излишняя логика. От вложенности избавляемся, нормализация не нужна. Можно сравнить по title
-// TODO: попробовать через new Promise(resolve, reject)
-
-const addNewPosts = ({ feeds, posts }) => {
+const addNewPosts = ({ feeds, posts }) => new Promise((resolve) => {
   feeds.forEach((feed) => {
     const { url, id } = feed;
     const proxyUrl = buildProxyUrl(url);
     axios.get(proxyUrl)
       .then((xml) => {
         const { parsedPosts: newPosts } = parse(xml);
+        const newPostTitles = newPosts.map((post) => post.title);
+        const olsPostTitles = posts.filter((post) => post.postId === id).map((post) => post.title);
 
-        const oldPosts = posts.flatMap((post) => post).filter((post) => post.postId === id);
-        // const oldPostsTitles = posts.flatMap((post) => post).map((post) => post.title);
+        const diffTitles = _.difference(newPostTitles, olsPostTitles);
 
-        // console.log(oldPosts);
-        // console.log(oldPostsTitles);
+        const diffPosts = newPosts
+          .filter((post) => _.includes(diffTitles, post.title))
+          .map((post) => ({ ...post, postId: id }));
 
-        const oldPostsNormalize = oldPosts.map((post) => ({
-          title: post.title,
-          link: post.link,
-          description: post.description,
-          uiStateRead: post.uiStateRead,
-        }));
-
-        const diff = _.differenceBy(oldPostsNormalize, newPosts, 'title');
-        const diffItems = diff.map((item) => ({ ...item, id }));
-
-        if (diffItems.length !== 0) {
-          posts.push(diffItems);
+        if (diffPosts.length !== 0) {
+          posts.unshift(...diffPosts);
         }
       });
   });
-
-  return Promise.resolve();
-};
+  resolve('success');
+});
 
 export default (state) => {
   const watchedState = state;
@@ -89,10 +77,10 @@ export default (state) => {
         watchedState.feeds.unshift(feed);
         watchedState.posts.unshift(...posts);
 
-        // setTimeout(function check() {
-        //   addNewPosts(watchedState)
-        //     .finally(() => setTimeout(check, 5000));
-        // }, 5000);
+        setTimeout(function check() {
+          addNewPosts(watchedState)
+            .finally(() => setTimeout(check, 5000));
+        }, 5000);
       })
       .catch((err) => {
         watchedState.form.valid = false;

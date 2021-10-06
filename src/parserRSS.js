@@ -26,7 +26,6 @@ const isValidRSS = (xmlDOM) => !xmlDOM.getElementsByTagName('parsererror').lengt
 export default (xml) => {
   const parser = new DOMParser();
   const xmlData = parser.parseFromString(xml.data.contents, 'text/xml');
-  console.log(typeof xmlData);
 
   if (!isValidRSS(xmlData)) {
     throw new Error('processStatus.errors.invalidRSS');
