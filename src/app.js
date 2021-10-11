@@ -10,11 +10,11 @@ const validate = (url, { feedList }) => {
 
 const buildProxyUrl = (url) => `https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${url}`;
 
-const addNewPosts = ({ feeds, posts }) => new Promise((resolve) => {
-  feeds.forEach((feed) => {
+const addNewPosts = ({ feeds, posts }) => {
+  const promises = feeds.map((feed) => {
     const { url, id } = feed;
     const proxyUrl = buildProxyUrl(url);
-    axios.get(proxyUrl)
+    return axios.get(proxyUrl)
       .then((xml) => {
         const { parsedPosts: newPosts } = parse(xml);
         const newPostTitles = newPosts.map((post) => post.title);
@@ -31,14 +31,14 @@ const addNewPosts = ({ feeds, posts }) => new Promise((resolve) => {
         }
       });
   });
-  resolve('success');
-});
+  return Promise.all(promises);
+};
 
 const getErrorMessage = (error) => {
-  if (axios.isAxiosError(error)) {
+  if (error.isAxiosError) {
     return 'processStatus.errors.networkError';
   }
-  if (error.message === 'parsing error') {
+  if (error.isParsingError) {
     return 'processStatus.errors.invalidRSS';
   }
   return error.message;
