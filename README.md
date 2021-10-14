@@ -18,4 +18,4 @@ It allows an unlimited number of RSS feeds, updates them itself and updates new 
 - Git Actions
 - Bootstrap
 
-Project is deployed on Vercel - [link](https://hexlet-frontend-project-3.vercel.app/)
+Project has been deployed on Vercel - [link](https://hexlet-frontend-project-3.vercel.app/)
